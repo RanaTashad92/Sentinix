@@ -2,7 +2,7 @@
 
 A real-time phishing URL detection system built with machine learning and deployed as a cross-platform mobile application. It extracts 22 structural features directly from URL strings and passes them through a three-layer defense pipeline: dual ML classifiers, VirusTotal threat intelligence, and Google Safe Browsing verification.
 
-Built as an independent research project after graduating from Bahria University Lahore (BSc Computer Science, 2025). A full research paper accompanies this project — see the link below.
+Built as an independent research project after graduating from Bahria University Lahore (BS Computer Science, 2025). A full research paper accompanies this project — see the link below.
 
 ---
 
@@ -257,18 +257,20 @@ Scan the QR code in the Expo Go app on your phone. Or press `i` for iOS simulato
 ---
 ## Model files
 
-The trained `.pkl` files are not in this repo because the Random Forest model serializes to ~450 MB. To get the models:
+The trained `.pkl` files are included in this repo under `phishing-detector/models/`:
 
-**Option 1 — Train them yourself**
+- `rf_phishing_detector.pkl` — trained Random Forest classifier
+- `xgb_phishing_detector.pkl` — trained XGBoost classifier
+- `feature_names.json` — ordered list of 22 feature names
+- `model_metadata.json` — evaluation metrics and model configuration
 
-Run the three notebooks in order inside `phishing-detector/notebooks/`. The training data is the [Kaggle Phishing URL Dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset). The notebooks handle downloading, SMOTE balancing, training, and saving the `.pkl` files to `phishing-detector/models/`.
+The API loads them automatically on startup — no extra steps needed.
 
-**Option 2 — Download pre-trained models**
+**Want to retrain from scratch?**
 
-Pre-trained `.pkl` files will be released as a GitHub Release asset. Check the [Releases](https://github.com/RanaTashad92/Sentinix/releases) tab.
+Run the three notebooks in order inside `phishing-detector/notebooks/`. The training data is the [Kaggle Phishing URL Dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset). The notebooks handle data exploration, SMOTE balancing, training, and saving new `.pkl` files to `phishing-detector/models/`.
 
 ---
-
 ## Environment variables
 
 Create a `.env` file inside `phishing-detector/` based on `.env.example`:
