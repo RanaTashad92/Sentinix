@@ -9,14 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Ensure src directory is in sys.path
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURR_DIR not in sys.path:
     sys.path.insert(0, CURR_DIR)
 
 from features import extract_features
 
-# Robust discovery of models directory
 def find_models_dir():
     candidates = [
         os.path.join(CURR_DIR, '..', 'models'),
@@ -34,10 +32,8 @@ def find_models_dir():
 
 MODELS_DIR = find_models_dir()
 
-# Load env variables
 load_dotenv(os.path.join(MODELS_DIR, '..', '.env'))
 
-# Load XGBoost & Random Forest ML models safely
 xgb_model = None
 rf_model = None
 
@@ -58,7 +54,6 @@ if os.path.exists(rf_path):
 if rf_model is None:
     rf_model = xgb_model
 
-# Load feature names and metadata safely
 FEATURE_NAMES = [
     'url_length', 'domain_length', 'path_length', 'query_length',
     'has_at_symbol', 'has_ip_address', 'has_double_slash', 'has_dash_in_domain',
@@ -84,11 +79,9 @@ if os.path.exists(meta_path):
     except Exception:
         pass
 
-# ── API keys from .env ─────────────────────────────────────────
 VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY', '')
 GSB_API_KEY = os.getenv('SAFE_BROWSING_API_KEY', '')
 
-# ── FastAPI app ────────────────────────────────────────────────
 app = FastAPI(
     title='Sentinix AI Phishing Detector API',
     description='Real-time dual-model phishing detection using XGBoost + Random Forest + Threat Intel',
@@ -103,8 +96,6 @@ app.add_middleware(
 )
 
 
-# ── Request / Response schemas ─────────────────────────────────
-
 class ScanRequest(BaseModel):
     url: str
 
@@ -115,21 +106,20 @@ class ModelComparison(BaseModel):
 
 class ScanResponse(BaseModel):
     url: str
-    verdict: str              # SAFE / SUSPICIOUS / DANGEROUS
-    risk_score: float         # Final combined ensemble score
-    ml_score: float           # Combined ML probability (XGB + RF average)
-    xgb_score: float          # XGBoost Model probability
-    rf_score: float           # Random Forest Model probability
+    verdict: str
+    risk_score: float
+    ml_score: float
+    xgb_score: float
+    rf_score: float
     virustotal_detections: int
     virustotal_total: int
     safe_browsing_flagged: bool
     threat_types: list
-    features: dict            # 22 structural URL features
-    explanation: list         # Human-readable reasons
+    features: dict
+    explanation: list
     model_comparison: ModelComparison
 
 
-# ── Helper: Dual ML prediction ─────────────────────────────────
 def ml_predict_dual(url: str) -> tuple[float, float, float, dict]:
     feats = extract_features(url)
     if not feats:
@@ -158,7 +148,6 @@ def ml_predict_dual(url: str) -> tuple[float, float, float, dict]:
     return xgb_prob, rf_prob, combined_ml_prob, feats
 
 
-# ── Helper: VirusTotal API ─────────────────────────────────────
 async def check_virustotal(url: str) -> tuple[int, int]:
     if not VT_API_KEY:
         return 0, 0
@@ -195,7 +184,6 @@ async def check_virustotal(url: str) -> tuple[int, int]:
         return 0, 0
 
 
-# ── Helper: Google Safe Browsing ──────────────────────────────
 async def check_safe_browsing(url: str) -> tuple[bool, list]:
     if not GSB_API_KEY:
         return False, []
@@ -241,7 +229,6 @@ async def check_safe_browsing(url: str) -> tuple[bool, list]:
         return False, []
 
 
-# ── Helper: Build human-readable explanation ──────────────────
 def build_explanation(feats: dict, vt_detections: int, gsb_flagged: bool) -> list:
     reasons = []
 
@@ -275,7 +262,6 @@ def build_explanation(feats: dict, vt_detections: int, gsb_flagged: bool) -> lis
     return reasons
 
 
-# ── Helper: Ensemble scoring ───────────────────────────────────
 def compute_ensemble_score(ml_score: float, vt_detections: int,
                             vt_total: int, gsb_flagged: bool) -> float:
     score = ml_score
@@ -290,7 +276,6 @@ def compute_ensemble_score(ml_score: float, vt_detections: int,
     return round(min(score, 1.0), 4)
 
 
-# ── MAIN ENDPOINT ──────────────────────────────────────────────
 @app.post('/scan', response_model=ScanResponse)
 async def scan_url(request: ScanRequest):
     url = request.url.strip()

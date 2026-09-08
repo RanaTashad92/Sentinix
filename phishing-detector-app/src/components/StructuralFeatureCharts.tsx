@@ -100,7 +100,6 @@ export default function StructuralFeatureCharts({ features }: Props) {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.headerRow}>
                 <View style={styles.titleBadge}>
                     <Text style={styles.titleBadgeText}>FEAT</Text>
@@ -111,7 +110,6 @@ export default function StructuralFeatureCharts({ features }: Props) {
                 </View>
             </View>
 
-            {/* Gauge Metrics Section */}
             <View style={styles.metricsBox}>
                 <MetricBar
                     label="Domain Randomness (Entropy)"
@@ -132,7 +130,6 @@ export default function StructuralFeatureCharts({ features }: Props) {
                 />
             </View>
 
-            {/* Character Composition Breakdown */}
             <View style={styles.compositionBox}>
                 <Text style={styles.compTitle}>Character breakdown</Text>
                 <View style={styles.compBarTrack}>
@@ -156,7 +153,6 @@ export default function StructuralFeatureCharts({ features }: Props) {
                 </View>
             </View>
 
-            {/* Security Signal Matrix */}
             <Text style={styles.matrixTitle}>Security signals</Text>
             <View style={styles.matrixGrid}>
                 <MatrixItem

@@ -40,13 +40,11 @@ def extract_features(url: str) -> dict:
 
         f = {}
 
-        # Length features
         f['url_length']    = len(url)
         f['domain_length'] = len(ext.domain)
         f['path_length']   = len(parsed.path)
         f['query_length']  = len(parsed.query)
 
-        # Structural features
         f['has_at_symbol']     = int('@' in url)
         f['has_ip_address']    = int(bool(
             re.search(
@@ -64,7 +62,6 @@ def extract_features(url: str) -> dict:
             len(re.findall(r'[%=&?#@!$]', url)) / max(len(url), 1), 4
         )
 
-        # Security features
         f['is_https']             = int(parsed.scheme == 'https')
         f['has_suspicious_tld']   = int(f'.{ext.suffix}' in suspicious_tlds)
         f['subdomain_depth']      = len(ext.subdomain.split('.')) if ext.subdomain else 0
@@ -73,7 +70,6 @@ def extract_features(url: str) -> dict:
             any(b in ext.subdomain.lower() for b in brands)
         ) if ext.subdomain else 0
 
-        # Entropy features
         f['domain_entropy'] = shannon_entropy(ext.domain)
         f['url_entropy']    = shannon_entropy(url)
         f['digit_ratio']    = round(sum(c.isdigit() for c in url) / max(len(url), 1), 4)

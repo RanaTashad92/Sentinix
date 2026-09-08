@@ -4,7 +4,6 @@ import * as Haptics from 'expo-haptics';
 import { saveToHistory, ScanRecord } from '../utils/storage';
 import { generateAntiBotHeaders, checkRateLimit } from '../utils/antiBot';
 
-// Change this to your Render URL or local machine IP
 const API_BASE = 'https://phishing-detector-mu-flame.vercel.app';
 
 
@@ -38,7 +37,6 @@ export function useScanner() {
     async function scan(url: string) {
         if (!url.trim()) return;
 
-        // ── Client-side rate limit check ──────────────────────
         if (!checkRateLimit()) {
             setError('Too many scans — please wait a moment before trying again.');
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -50,7 +48,6 @@ export function useScanner() {
         setResult(null);
 
         try {
-            // ── Generate anti-bot verification headers ────────
             const antiBotHeaders = generateAntiBotHeaders(url.trim());
 
             const { data } = await axios.post<ScanResult>(
@@ -65,7 +62,6 @@ export function useScanner() {
             );
             setResult(data);
 
-            // Haptic feedback based on verdict
             if (data.verdict === 'DANGEROUS') {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             } else if (data.verdict === 'SUSPICIOUS') {
@@ -74,7 +70,6 @@ export function useScanner() {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             }
 
-            // Save to history
             const record: ScanRecord = {
                 id: Date.now().toString(),
                 url: data.url,

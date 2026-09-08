@@ -16,12 +16,10 @@ export default function AppIcon({ size = 28, color1 = '#818CF8', color2 = '#4F46
                     <Stop offset="100%" stopColor={color2} />
                 </SvgGradient>
             </Defs>
-            {/* Outer Shield Outline */}
             <Path
                 d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"
                 fill="url(#shieldGrad)"
             />
-            {/* Inner Security Check/Node */}
             <Path
                 d="M9 11.5l2 2 4.5-4.5"
                 stroke="#FFFFFF"

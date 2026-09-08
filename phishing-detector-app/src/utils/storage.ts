@@ -20,7 +20,6 @@ export async function saveToHistory(record: ScanRecord): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(KEY);
     const history: ScanRecord[] = raw ? JSON.parse(raw) : [];
-    // newest first, keep max 50
     const updated = [record, ...history].slice(0, MAX);
     await AsyncStorage.setItem(KEY, JSON.stringify(updated));
   } catch { }

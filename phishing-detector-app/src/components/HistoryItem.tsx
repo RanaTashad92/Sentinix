@@ -28,17 +28,14 @@ export default function HistoryItem({ item, onPress }: Props) {
             style={({ pressed }) => [styles.row, pressed && { opacity: 0.8, backgroundColor: theme.colors.bgCardHover }]}
             onPress={() => onPress(item)}
         >
-            {/* Status Indicator Dot */}
             <View style={[styles.statusDot, { backgroundColor: color }]} />
 
-            {/* URL Info */}
             <View style={styles.mid}>
                 <Text style={styles.hostText} numberOfLines={1}>{getHost(item.url)}</Text>
                 <Text style={styles.fullUrl} numberOfLines={1}>{item.url}</Text>
                 <Text style={styles.date}>{dateStr} at {timeStr}</Text>
             </View>
 
-            {/* Verdict Pill */}
             <View style={[styles.verdictBadge, { backgroundColor: `${color}18`, borderColor: `${color}50` }]}>
                 <Text style={[styles.verdictText, { color }]}>
                     {item.verdict}

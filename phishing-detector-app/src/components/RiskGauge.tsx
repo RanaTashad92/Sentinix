@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme, Verdict, verdictColor, verdictGlow } from '../constants/theme';
 
 interface Props {
-    score: number;   // 0.0 to 1.0
+    score: number;
     verdict: Verdict;
     size?: number;
 }
@@ -53,7 +53,6 @@ export default function RiskGauge({ score, verdict, size = 190 }: Props) {
 
     return (
         <Animated.View style={[styles.container, pulseStyle, { width: size, height: size }]}>
-            {/* Glow background */}
             <View
                 style={[
                     styles.glowBg,
@@ -66,7 +65,6 @@ export default function RiskGauge({ score, verdict, size = 190 }: Props) {
                 ]}
             />
 
-            {/* Outer ring gradient */}
             <LinearGradient
                 colors={[color, `${color}40`, theme.colors.bgCardBorder]}
                 start={{ x: 0, y: 0 }}
@@ -81,7 +79,6 @@ export default function RiskGauge({ score, verdict, size = 190 }: Props) {
                     },
                 ]}
             >
-                {/* Inner circle mask */}
                 <View
                     style={[
                         styles.innerCircle,

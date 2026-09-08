@@ -14,7 +14,6 @@ from pydantic import BaseModel
 from mangum import Mangum
 
 
-# ── Lightweight Feature Extraction ─────────────────────────────
 def shannon_entropy(s: str) -> float:
     if not s:
         return 0.0
@@ -96,7 +95,6 @@ def extract_features(url: str) -> dict:
         return {}
 
 
-# ── Dynamic Model Discovery ───────────────────────────────────
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def find_models_dir():
@@ -158,18 +156,15 @@ VT_API_KEY = os.getenv('VIRUSTOTAL_API_KEY', '')
 GSB_API_KEY = os.getenv('SAFE_BROWSING_API_KEY', '')
 
 
-# ── Anti-Bot Protection ──────────────────────────────────────
 BOT_PROTECTION_SECRET = 'Sentinix_AntiBot_Protection_2026_SecureKey'
-MAX_TIMESTAMP_DRIFT = 300  # Allow 5 minutes of clock drift
+MAX_TIMESTAMP_DRIFT = 300
 
-# Server-side rate limiter (per IP)
-RATE_LIMIT_WINDOW = 60  # seconds
-RATE_LIMIT_MAX = 20     # max requests per window per IP
+RATE_LIMIT_WINDOW = 60
+RATE_LIMIT_MAX = 20
 _rate_buckets: dict[str, list[float]] = defaultdict(list)
 
 
 def _fnv1a_dual_hash(payload: str) -> str:
-    """Reproduce the exact same FNV-1a dual-hash the mobile client computes."""
     h1 = 2166136261
     h2 = 3735878807
     for ch in payload:
@@ -177,22 +172,18 @@ def _fnv1a_dual_hash(payload: str) -> str:
         h1 ^= code
         h1 = ctypes.c_int32(h1 * 16777619).value & 0xFFFFFFFF
         h2 ^= code
-        # JS Math.imul wraps to 32-bit; replicate via ctypes
         h2 = ctypes.c_int32(h2 * 1099511628211).value & 0xFFFFFFFF
     return f'{h1:x}-{h2:x}'
 
 
 def _verify_antibot(request: Request, body: dict | None) -> bool:
-    """Validate anti-bot headers. Returns True if the request is legitimate."""
     client_header = request.headers.get('x-sentinix-client', '')
     timestamp_str = request.headers.get('x-sentinix-timestamp', '')
     signature = request.headers.get('x-sentinix-signature', '')
 
-    # 1. Must identify as Sentinix app
     if not client_header.startswith('Sentinix-Mobile-App'):
         return False
 
-    # 2. Timestamp must be present and within drift window
     if not timestamp_str:
         return False
     try:
@@ -202,7 +193,6 @@ def _verify_antibot(request: Request, body: dict | None) -> bool:
     if abs(time.time() - ts) > MAX_TIMESTAMP_DRIFT:
         return False
 
-    # 3. Reproduce the hash and compare signatures
     url = ''
     if body and 'url' in body:
         url = body['url'].strip().lower()
@@ -215,10 +205,8 @@ def _verify_antibot(request: Request, body: dict | None) -> bool:
 
 
 def _check_rate_limit(ip: str) -> bool:
-    """Returns True if the IP is within rate limits."""
     now = time.time()
     bucket = _rate_buckets[ip]
-    # Evict expired timestamps
     while bucket and now - bucket[0] > RATE_LIMIT_WINDOW:
         bucket.pop(0)
     if len(bucket) >= RATE_LIMIT_MAX:
@@ -228,13 +216,11 @@ def _check_rate_limit(ip: str) -> bool:
 
 
 class AntiBotMiddleware(BaseHTTPMiddleware):
-    """FastAPI middleware that validates anti-bot headers on /scan endpoints."""
     async def dispatch(self, request: Request, call_next):
         path = request.url.path.rstrip('/')
         is_scan = request.method == 'POST' and path.endswith('/scan')
 
         if is_scan:
-            # Rate limit check
             client_ip = request.client.host if request.client else 'unknown'
             if not _check_rate_limit(client_ip):
                 return JSONResponse(
@@ -242,7 +228,6 @@ class AntiBotMiddleware(BaseHTTPMiddleware):
                     content={'detail': 'Rate limit exceeded. Please try again later.'},
                 )
 
-            # Read body for signature verification
             body_bytes = await request.body()
             body_dict = None
             try:
@@ -260,7 +245,6 @@ class AntiBotMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# ── FastAPI App ───────────────────────────────────────────────
 app = FastAPI(
     title='Sentinix AI Phishing Detector API',
     version='1.0.0'
@@ -273,11 +257,9 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# Add anti-bot protection on scan endpoints
 app.add_middleware(AntiBotMiddleware)
 
 
-# ── Schemas ───────────────────────────────────────────────────
 class ScanRequest(BaseModel):
     url: str
 
@@ -302,7 +284,6 @@ class ScanResponse(BaseModel):
     model_comparison: ModelComparison
 
 
-# ── Core Scan Logic ───────────────────────────────────────────
 def ml_predict_dual(url: str) -> tuple[float, float, float, dict]:
     feats = extract_features(url)
     if not feats:
@@ -438,7 +419,6 @@ async def execute_scan(url_str: str) -> ScanResponse:
     )
 
 
-# ── Explicit Vercel Route Bindings ─────────────────────────────
 @app.post('/scan')
 @app.post('/api/scan')
 @app.post('/api/index.py')

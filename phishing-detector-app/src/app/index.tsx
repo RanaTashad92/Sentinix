@@ -147,11 +147,9 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.root}>
-      {/* Background ambient lighting */}
       <View style={styles.glowTop} pointerEvents="none" />
       <View style={styles.glowBottom} pointerEvents="none" />
 
-      {/* Brand Header */}
       <Animated.View entering={FadeInDown.duration(600)} style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.logoBadge}>
@@ -169,13 +167,11 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Privacy Policy Header Button */}
         <Pressable onPress={() => setPrivacyOpen(true)} style={styles.privacyBtn}>
           <Text style={styles.privacyBtnText}>Privacy</Text>
         </Pressable>
       </Animated.View>
 
-      {/* Tab Navigation */}
       <TabBar active={tab} onChange={setTab} />
 
       {tab === 'scan' ? (
@@ -185,17 +181,14 @@ export default function HomeScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Main Input Section */}
           {!result && (
             <Animated.View entering={FadeIn.duration(400)}>
-              {/* Scanner Card */}
               <View style={styles.inputCard}>
                 <View style={styles.cardHeaderRow}>
                   <Text style={styles.inputLabel}>Check a link</Text>
                   <Text style={styles.inputHint}>Paste or type any URL</Text>
                 </View>
 
-                {/* Input Container with animated beam */}
                 <View style={styles.inputWrap}>
                   <ScannerBeam active={loading} />
                   <TextInput
@@ -219,13 +212,11 @@ export default function HomeScreen() {
                   )}
                 </View>
 
-                {/* Actions row */}
                 <View style={styles.actionRow}>
                   <Pressable onPress={pasteFromClipboard} style={styles.pasteBtn}>
                     <Text style={styles.pasteBtnText}>Paste Link</Text>
                   </Pressable>
 
-                  {/* Sample links */}
                   <View style={styles.samplesBox}>
                     <Text style={styles.sampleLabel}>Try:</Text>
                     <Pressable
@@ -238,7 +229,6 @@ export default function HomeScreen() {
                 </View>
               </View>
 
-              {/* Primary Scan Button */}
               <Animated.View style={btnStyle}>
                 <Pressable
                   style={({ pressed }) => [
@@ -271,14 +261,12 @@ export default function HomeScreen() {
                 </Pressable>
               </Animated.View>
 
-              {/* Error Alert */}
               {error && (
                 <Animated.View entering={FadeIn} style={styles.errorBox}>
                   <Text style={styles.errorText}>{error}</Text>
                 </Animated.View>
               )}
 
-              {/* Engine Highlights */}
               <View style={styles.featuresSection}>
                 <Text style={styles.sectionTitle}>How we protect you</Text>
                 <View style={styles.featureGrid}>
@@ -302,7 +290,6 @@ export default function HomeScreen() {
             </Animated.View>
           )}
 
-          {/* Results Screen */}
           {result && (
             <Animated.View entering={FadeInDown.duration(400)}>
               <ScanResult result={result} onReset={handleReset} />
@@ -310,7 +297,6 @@ export default function HomeScreen() {
           )}
         </ScrollView>
       ) : (
-        /* History Section */
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -349,7 +335,6 @@ export default function HomeScreen() {
         </ScrollView>
       )}
 
-      {/* Privacy Policy Modal */}
       <PrivacyPolicyModal visible={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </View>
   );

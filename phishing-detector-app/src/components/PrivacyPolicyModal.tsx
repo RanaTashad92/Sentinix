@@ -17,7 +17,6 @@ export default function PrivacyPolicyModal({ visible, onClose }: Props) {
         >
             <View style={styles.overlay}>
                 <View style={styles.contentCard}>
-                    {/* Modal Header */}
                     <View style={styles.header}>
                         <View style={styles.titleWrap}>
                             <Text style={styles.headerTitle}>Privacy & Security</Text>
@@ -28,7 +27,6 @@ export default function PrivacyPolicyModal({ visible, onClose }: Props) {
                         </Pressable>
                     </View>
 
-                    {/* Scrollable Privacy Content */}
                     <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>Your data stays private</Text>
@@ -66,7 +64,6 @@ export default function PrivacyPolicyModal({ visible, onClose }: Props) {
                         </View>
                     </ScrollView>
 
-                    {/* Footer Accept Button */}
                     <Pressable style={styles.doneBtn} onPress={onClose}>
                         <LinearGradient
                             colors={['#6366F1', '#4F46E5']}

@@ -111,20 +111,18 @@ export default function ScanResult({ result, onReset }: Props) {
 
     return (
         <Animated.View style={cardStyle}>
-            {/* Verdict Hero Card */}
             <View style={[styles.verdictCard, { borderColor: `${color}40` }]}>
 
-                {/* Status Headline Banner */}
                 <View style={[styles.bannerHeader, { backgroundColor: `${color}18` }]}>
                     <Text style={[styles.bannerText, { color }]}>{getHeadline()}</Text>
                 </View>
 
-                {/* Gauge Visual */}
+
                 <View style={styles.gaugeRow}>
                     <RiskGauge score={result.risk_score} verdict={verdict} size={180} />
                 </View>
 
-                {/* URL Display */}
+
                 <Pressable onPress={copyURL} style={styles.urlBox}>
                     <View style={styles.urlTopRow}>
                         <Text style={styles.urlLabel}>Scanned URL</Text>
@@ -133,7 +131,7 @@ export default function ScanResult({ result, onReset }: Props) {
                     <Text style={styles.urlText} numberOfLines={2}>{result.url}</Text>
                 </Pressable>
 
-                {/* Security Verification Breakdown */}
+
                 <View style={styles.checksContainer}>
                     <Text style={styles.checksSectionTitle}>Security checks</Text>
                     <SecurityCheckRow
@@ -157,7 +155,7 @@ export default function ScanResult({ result, onReset }: Props) {
                 </View>
             </View>
 
-            {/* DUAL ML MODEL COMPARISON LINE GRAPH */}
+
             <ModelLineChart
                 xgbScore={xgbScore}
                 rfScore={rfScore}
@@ -165,10 +163,10 @@ export default function ScanResult({ result, onReset }: Props) {
                 verdictColor={color}
             />
 
-            {/* RICH STRUCTURAL FEATURE METRICS & VISUAL GRAPHS */}
+
             <StructuralFeatureCharts features={result.features} />
 
-            {/* Explanation Details */}
+
             {result.explanation.length > 0 && (
                 <View style={styles.explainCard}>
                     <Text style={styles.explainTitle}>Why we flagged this</Text>
@@ -178,7 +176,7 @@ export default function ScanResult({ result, onReset }: Props) {
                 </View>
             )}
 
-            {/* Reset / Scan Next Link */}
+
             <Pressable
                 style={({ pressed }) => [styles.resetBtn, pressed && { opacity: 0.85 }]}
                 onPress={onReset}
