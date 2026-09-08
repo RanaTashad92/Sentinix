@@ -280,4 +280,4 @@ You are free to use, modify, and distribute this code. If you use it in research
 BS Computer Science — Bahria University Lahore (2025)
 Independent researcher 
 
-[LinkedIn](www.linkedin.com/in/tashad-tarij-5230b02b5) · [Email](tashadrana224@gmail.com)
+[LinkedIn](https://www.linkedin.com/in/tashad-tarij-5230b02b5) · [Email](mailto:tashadrana224@gmail.com)
