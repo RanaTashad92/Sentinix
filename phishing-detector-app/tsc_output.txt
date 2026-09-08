@@ -1,0 +1,9 @@
+﻿src/app/explore.tsx(265,25): error TS7031: Binding element 'pressed' implicitly has an 'any' type.
+src/app/index.tsx(169,23): error TS7031: Binding element 'pressed' implicitly has an 'any' type.
+src/app/index.tsx(214,25): error TS7031: Binding element 'pressed' implicitly has an 'any' type.
+src/components/animated-icon.tsx(213,19): error TS2551: Property 'absoluteFillObject' does not exist on type 'typeof StyleSheet'. Did you mean 'absoluteFill'?
+src/constants/theme.ts(6,8): error TS2882: Cannot find module or type declarations for side-effect import of '@/global.css'.
+src/hooks/use-theme.ts(13,3): error TS2322: Type '{ readonly text: "#0F172A"; readonly textSecondary: "#64748B"; readonly background: "#F1F5F9"; readonly backgroundElement: "#FFFFFF"; readonly backgroundSelected: "#E2E8F0"; readonly card: "#FFFFFF"; ... 16 more ...; readonly shimmer: "rgba(108, 92, 231, 0.15)"; } | { ...; }' is not assignable to type '{ readonly text: "#0F172A"; readonly textSecondary: "#64748B"; readonly background: "#F1F5F9"; readonly backgroundElement: "#FFFFFF"; readonly backgroundSelected: "#E2E8F0"; readonly card: "#FFFFFF"; ... 16 more ...; readonly shimmer: "rgba(108, 92, 231, 0.15)"; }'.
+  Type '{ readonly text: "#F1F5F9"; readonly textSecondary: "#94A3B8"; readonly background: "#0B1120"; readonly backgroundElement: "#151D2E"; readonly backgroundSelected: "#1E293B"; readonly card: "#151D2E"; ... 16 more ...; readonly shimmer: "rgba(162, 155, 254, 0.15)"; }' is not assignable to type '{ readonly text: "#0F172A"; readonly textSecondary: "#64748B"; readonly background: "#F1F5F9"; readonly backgroundElement: "#FFFFFF"; readonly backgroundSelected: "#E2E8F0"; readonly card: "#FFFFFF"; ... 16 more ...; readonly shimmer: "rgba(108, 92, 231, 0.15)"; }'.
+    Types of property 'text' are incompatible.
+      Type '"#F1F5F9"' is not assignable to type '"#0F172A"'.

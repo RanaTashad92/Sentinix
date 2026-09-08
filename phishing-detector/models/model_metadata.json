@@ -1,0 +1,44 @@
+{
+  "best_model": "Random Forest",
+  "training_samples": 628635,
+  "test_samples": 157159,
+  "n_features": 22,
+  "feature_names": [
+    "url_length",
+    "domain_length",
+    "path_length",
+    "query_length",
+    "has_at_symbol",
+    "has_ip_address",
+    "has_double_slash",
+    "has_dash_in_domain",
+    "has_port",
+    "dot_count",
+    "hyphen_count",
+    "param_count",
+    "special_char_ratio",
+    "is_https",
+    "has_suspicious_tld",
+    "subdomain_depth",
+    "suspicious_word_count",
+    "brand_in_subdomain",
+    "domain_entropy",
+    "url_entropy",
+    "digit_ratio",
+    "letter_ratio"
+  ],
+  "metrics": {
+    "Random Forest": {
+      "auc_roc": 0.9828,
+      "f1": 0.9346,
+      "precision": 0.9381,
+      "recall": 0.9311
+    },
+    "XGBoost": {
+      "auc_roc": 0.9516,
+      "f1": 0.8726,
+      "precision": 0.8936,
+      "recall": 0.8526
+    }
+  }
+}
