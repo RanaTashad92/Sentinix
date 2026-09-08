@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+tsc_output.txt 
+AGENTS.md 
+CLAUDE.md 
+.claude/ 
+data/raw/ 
+data/processed/ 
