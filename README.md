@@ -172,39 +172,89 @@ Sentinix/
 
 ```bash
 cd phishing-detector
-pip install -r requirements.txt
-
-# Add your API keys to .env (see .env.example — never commit .env)
-cp .env.example .env
-
-uvicorn api.index:app --reload --port 8000
 ```
 
-The API will be live at `http://localhost:8000`. Test it:
+Activate the virtual environment:
 
+**Windows:**
+```powershell
+venv\Scripts\activate
+```
+
+**Mac / Linux:**
+```bash
+source venv/bin/activate
+```
+
+Install dependencies (first time only):
+
+```bash
+pip install -r requirements.txt
+```
+
+Copy the environment file and add your API keys:
+
+**Windows:**
+```powershell
+copy .env.example .env
+```
+
+**Mac / Linux:**
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in your VirusTotal and Google Safe Browsing keys. Then start the server:
+
+```bash
+cd src
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
+```
+
+The API will be live at `http://localhost:8000`. The `--host 0.0.0.0` flag is needed so your phone can reach the server over your local network.
+
+Test it:
+
+**Windows (PowerShell):**
+```powershell
+Invoke-RestMethod -Uri "http://localhost:8000/scan" -Method POST -ContentType "application/json" -Body '{"url": "https://example.com"}'
+```
+
+**Mac / Linux:**
 ```bash
 curl -X POST http://localhost:8000/scan \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com"}'
 ```
 
+The system works without API keys — it falls back to ML-only scoring. Keys just enable Layers 2 and 3.
+
+---
+
 ### Mobile app
 
 ```bash
 cd phishing-detector-app
 npm install
+```
 
-# Point the API to your local machine
-# In src/hooks/useScanner.ts, set:
-# const API_BASE = 'http://YOUR_LOCAL_IP:8000'
+Open `src/hooks/useScanner.ts` and set your machine's local IP:
 
+```ts
+const API_BASE = 'http://YOUR_LOCAL_IP:8000';
+```
+
+Find your local IP on Windows by running `ipconfig` in PowerShell and looking for IPv4 Address under your Wi-Fi adapter. Your phone and PC must be on the same Wi-Fi network.
+
+Then start Expo:
+
+```bash
 npx expo start
 ```
 
-Scan the QR code in Expo Go on your phone, or press `i` for iOS simulator / `a` for Android emulator.
+Scan the QR code in the Expo Go app on your phone. Or press `i` for iOS simulator / `a` for Android emulator.
 
 ---
-
 ## Model files
 
 The trained `.pkl` files are not in this repo because the Random Forest model serializes to ~450 MB. To get the models:
