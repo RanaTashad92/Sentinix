@@ -277,7 +277,7 @@ You are free to use, modify, and distribute this code. If you use it in research
 ## Author
 
 **Tashad Tarij**
-BSc Computer Science — Bahria University Lahore (2025)
+BS Computer Science — Bahria University Lahore (2025)
 Independent researcher 
 
-[LinkedIn](https://linkedin.com/in/your-handle) · [Email](mailto:your@email.com)
+[LinkedIn](https://www.linkedin.com/in/tashad-tarij-5230b02b5) · [Email](mailto:tashadrana224@gmail.com)
