@@ -222,3 +222,4 @@ CLAUDE.md
 .claude/ 
 data/raw/ 
 data/processed/ 
+"*.csv" 
