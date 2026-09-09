@@ -2,7 +2,7 @@
 
 A real-time phishing URL detection system built with machine learning and deployed as a cross-platform mobile application. It extracts 22 structural features directly from URL strings and passes them through a three-layer defense pipeline: dual ML classifiers, VirusTotal threat intelligence, and Google Safe Browsing verification.
 
-Built as an independent research project after graduating from Bahria University Lahore (BS Computer Science, 2025).
+Built as an independent research project after graduating from Bahria University Lahore (BS Computer Science, 2025). A full research paper accompanies this project — see the link below.
 
 ---
 
@@ -19,9 +19,10 @@ You paste a URL into the app. Within a couple of seconds it tells you whether th
 Two models run in parallel on 22 structural URL features:
 
 - Random Forest: AUC-ROC 0.9828, F1 0.9346
-- XGBoost (HistGradientBoosting): AUC-ROC 0.9516, F1 0.8726
+- XGBoost: AUC-ROC 0.9516, F1 0.8726
+- Combined ensemble accuracy: 97.8%
 
-Both models were trained on 628,635 SMOTE-balanced samples from 549,346 raw URLs.
+Both models were trained on 785,794 SMOTE-balanced samples (from 507,195 raw URLs).
 
 **Layer 2 — VirusTotal**
 
@@ -76,14 +77,15 @@ Features are extracted in under 2ms with no network requests to the target host.
 
 **Machine learning pipeline**
 - Python 3.12
-- scikit-learn (Random Forest + HistGradientBoostingClassifier)
+- scikit-learn (Random Forest)
+- XGBoost
 - imbalanced-learn (SMOTE)
 - pandas, numpy
 - joblib (model serialization)
 
 **Backend API**
 - FastAPI
-- uvicorn
+- uvicorn / Mangum (serverless adapter)
 - httpx (async requests to VirusTotal and Google Safe Browsing)
 - tldextract
 - Deployed on Vercel
@@ -101,33 +103,17 @@ Features are extracted in under 2ms with no network requests to the target host.
 
 ---
 
-## Model configuration
-
-**Random Forest**
-- n_estimators: 100
-- max_depth: 15
-- min_samples_split: 2
-
-**HistGradientBoostingClassifier (XGBoost equivalent)**
-- max_iter: 100
-- learning_rate: 0.1
-- max_depth: None (unconstrained)
-
-Both models trained on 628,635 SMOTE-balanced samples. Test set: 157,159 samples drawn from the original raw distribution.
-
----
-
 ## Project structure
 
 ```
 Sentinix/
-├── phishing-detector/
+├── phishing-detector/          # Backend (FastAPI)
 │   ├── api/
-│   │   └── index.py            # Scan endpoint + anti-bot middleware
+│   │   └── index.py            # Main API — scan endpoint, anti-bot middleware
 │   ├── src/
 │   │   ├── features.py         # 22-feature URL extractor
 │   │   └── model.py            # Model loading and prediction
-│   ├── models/
+│   ├── models/                 # Trained .pkl files (see note below)
 │   │   ├── rf_phishing_detector.pkl
 │   │   ├── xgb_phishing_detector.pkl
 │   │   ├── feature_names.json
@@ -138,11 +124,11 @@ Sentinix/
 │   │   └── 03_model_training.ipynb
 │   └── requirements.txt
 │
-├── phishing-detector-app/
+├── phishing-detector-app/      # Mobile app (React Native / Expo)
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── index.tsx
-│   │   │   └── _layout.tsx
+│   │   │   ├── index.tsx       # HomeScreen
+│   │   │   └── _layout.tsx     # Root layout with splash screen
 │   │   ├── components/
 │   │   │   ├── RiskGauge.tsx
 │   │   │   ├── ModelLineChart.tsx
@@ -154,14 +140,15 @@ Sentinix/
 │   │   ├── hooks/
 │   │   │   └── useScanner.ts
 │   │   ├── utils/
-│   │   │   ├── antiBot.ts
-│   │   │   └── storage.ts
+│   │   │   ├── antiBot.ts      # FNV-1a dual-hash request signing
+│   │   │   └── storage.ts      # AsyncStorage scan history
 │   │   └── constants/
 │   │       └── theme.ts
 │   ├── app.json
 │   └── package.json
 │
-├── screenshots/
+├── screenshots/                # App screenshots for README
+├── data/                       # Training graphs and charts
 └── README.md
 ```
 
@@ -205,7 +192,7 @@ Install dependencies (first time only):
 pip install -r requirements.txt
 ```
 
-Copy the environment file and fill in your API keys:
+Copy the environment file and add your API keys:
 
 **Windows:**
 ```powershell
@@ -217,12 +204,14 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Start the server:
+Open `.env` and fill in your VirusTotal and Google Safe Browsing keys. Then start the server:
 
 ```bash
 cd src
 uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
+
+The API will be live at `http://localhost:8000`. The `--host 0.0.0.0` flag is needed so your phone can reach the server over your local network.
 
 Test it:
 
@@ -238,7 +227,7 @@ curl -X POST http://localhost:8000/scan \
   -d '{"url": "https://example.com"}'
 ```
 
-The system works without API keys — it falls back to ML-only scoring.
+The system works without API keys — it falls back to ML-only scoring. Keys just enable Layers 2 and 3.
 
 ---
 
@@ -255,43 +244,53 @@ Open `src/hooks/useScanner.ts` and set your machine's local IP:
 const API_BASE = 'http://YOUR_LOCAL_IP:8000';
 ```
 
-Find your local IP on Windows with `ipconfig` — look for IPv4 Address under your Wi-Fi adapter. Your phone and PC must be on the same network.
+Find your local IP on Windows by running `ipconfig` in PowerShell and looking for IPv4 Address under your Wi-Fi adapter. Your phone and PC must be on the same Wi-Fi network.
+
+Then start Expo:
 
 ```bash
 npx expo start
 ```
 
-Scan the QR code in Expo Go on your phone.
+Scan the QR code in the Expo Go app on your phone. Or press `i` for iOS simulator / `a` for Android emulator.
 
 ---
-
 ## Model files
 
-The trained `.pkl` files are included under `phishing-detector/models/`. The API loads them automatically on startup — no extra steps needed.
+The trained `.pkl` files are included in this repo under `phishing-detector/models/`:
+
+- `rf_phishing_detector.pkl` — trained Random Forest classifier
+- `xgb_phishing_detector.pkl` — trained XGBoost classifier
+- `feature_names.json` — ordered list of 22 feature names
+- `model_metadata.json` — evaluation metrics and model configuration
+
+The API loads them automatically on startup — no extra steps needed.
 
 **Want to retrain from scratch?**
 
-Run the three notebooks in order inside `phishing-detector/notebooks/`. Download the training data from the [Kaggle Phishing URL Dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset) and place the CSV in `phishing-detector/data/raw/`.
+Run the three notebooks in order inside `phishing-detector/notebooks/`. The training data is the [Kaggle Phishing URL Dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset). The notebooks handle data exploration, SMOTE balancing, training, and saving new `.pkl` files to `phishing-detector/models/`.
 
 ---
-
 ## Environment variables
 
-Create `.env` inside `phishing-detector/` using `.env.example` as a template:
+Create a `.env` file inside `phishing-detector/` based on `.env.example`:
 
 ```
 VIRUSTOTAL_API_KEY=your_key_here
 SAFE_BROWSING_API_KEY=your_key_here
 ```
 
-- VirusTotal free key: https://www.virustotal.com/gui/my-apikey
-- Google Safe Browsing key: https://console.cloud.google.com (enable Safe Browsing API)
+Get your keys from:
+- VirusTotal: https://www.virustotal.com/gui/my-apikey (free tier: 4 requests/minute)
+- Google Safe Browsing: https://console.cloud.google.com (enable Safe Browsing API)
+
+The system works without these keys — it falls back to ML-only scoring. The keys just enable Layers 2 and 3.
 
 ---
 
 ## Anti-bot security
 
-Every scan request carries three cryptographic headers:
+Every scan request from the mobile app carries three cryptographic headers generated by `antiBot.ts`:
 
 ```
 X-Sentinix-Client: Sentinix-Mobile-App/1.0
@@ -299,7 +298,23 @@ X-Sentinix-Timestamp: <unix_timestamp>
 X-Sentinix-Signature: <fnv1a_dual_hash>
 ```
 
-The backend validates the signature, rejects timestamps older than 300 seconds (replay protection), and enforces 20 requests per 60-second window per IP. The client enforces an additional 10 requests per 60-second limit before any request leaves the device.
+The backend validates the signature, rejects timestamps older than 300 seconds (replay protection), and enforces a server-side rate limit of 20 requests per 60-second window per IP. The client enforces an additional 10 requests per 60-second limit before the request even leaves the device.
+
+---
+
+## Research paper
+
+A full research paper covering the dataset, feature engineering, model evaluation, and system architecture accompanies this project.
+
+📄 **arXiv preprint:** *(link will be added after submission)*
+
+**Citation:**
+
+```
+Tarij, T. (2026). Sentinix: A Three-Layer AI-Powered Phishing URL Detection
+Framework with Cryptographic Anti-Bot Request Verification.
+arXiv preprint. [link]
+```
 
 ---
 
@@ -307,12 +322,14 @@ The backend validates the signature, rejects timestamps older than 300 seconds (
 
 MIT License — see [LICENSE](LICENSE) for details.
 
+You are free to use, modify, and distribute this code. If you use it in research, a citation to the paper above would be appreciated.
+
 ---
 
 ## Author
 
 **Tashad Tarij**
 BS Computer Science — Bahria University Lahore (2025)
-Independent researcher
+Independent researcher 
 
 [LinkedIn](https://www.linkedin.com/in/tashad-tarij-5230b02b5) · [Email](mailto:tashadrana224@gmail.com)
