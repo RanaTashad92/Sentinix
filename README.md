@@ -322,6 +322,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **Tashad Tarij**
 BS Computer Science — Bahria University Lahore (2025)
-Independent researcher
 
 [LinkedIn](https://www.linkedin.com/in/tashad-tarij-5230b02b5) · [Email](mailto:tashadrana224@gmail.com)
