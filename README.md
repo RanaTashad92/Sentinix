@@ -134,7 +134,7 @@ Features are extracted in under 2ms with no network requests to the target host.
 - learning_rate: 0.1
 - max_depth: None (unconstrained)
 
-Both models trained on 628,635 SMOTE-balanced samples. Test set: 157,159 samples drawn from the original raw distribution.
+Both models were trained on 628,635 SMOTE-balanced samples. The raw dataset contained 549,346 URLs, of which 507,195 passed cleaning and were used for feature extraction.
 
 ---
 
